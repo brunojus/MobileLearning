@@ -17,13 +17,13 @@ def generate_stream(**kwargs):
 
 	# Create some sample data, for demonstration purposes, we just take som samples from the initial training data
 	# This could be your continous flow of incoming data
-	movements_stream_input = pd.read_csv("../../../data/SmartMovementExport.csv")
+	movements_stream_input = pd.read_csv("/usr/local/airflow/data/SmartMovementExport.csv")
 	# From the whole input set, take random index for 500 new training examples
 	rand = random.sample(range(0, len(movements_stream_input)), 500)
 	logging.info('We stream now over Kafka some data.', producer.partitions_for('MovementsTopic'))
 
 	for i in rand:
-		json_stream_data = encode_as_json(movements_stream_input[i])
+		json_stream_data = movements_stream_input.iloc[[i]].to_json(orient="records")
 		producer.send('MovementsTopic', value=json_stream_data)
 		sleep(1)
 
